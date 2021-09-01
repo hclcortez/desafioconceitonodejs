@@ -11,11 +11,28 @@ app.use(express.json());
 const users = [];
 
 function checksExistsUserAccount(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+
+  const user = users.find(user => user.username === username);
+
+  if(!user){
+    return response.status(404).json({error: 'Usuário não encontrado'});
+  }
+
+  request.user = user;
+  return next()
 }
+
+const userExist = username => users.find(user => user.username === username)
 
 app.post('/users', (request, response) => {
   const { name, username } = request.body;
+
+
+
+  if (userExist(username)) {
+    return response.status(400).json({ error: 'User alredy exists' })
+  }
 
   const user = {
     id: uuidv4(),
